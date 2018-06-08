@@ -157,14 +157,14 @@ def run():
         #  https://datascience.stackexchange.com/questions/5224/how-to-prepare-augment-images-for-neural-network
 
         # TODO: Build NN using load_vgg, layers, and optimize function
-        epochs = 1
-        batch_size = 8
+        epochs = 50
+        batch_size = 4
 
         #TF place holders:
         correct_label = tf.placeholder(tf.int32, [None, None, None, num_classes], name= 'correct_label')
         learning_rate = tf.placeholder(tf.float32, name='learning_rate')
         
-        input_image, keep_prob, vgg_layer3_out, vgg_layer4_out, vgg_layer7_out = load_vgg(sess. vgg_path)
+        input_image, keep_prob, vgg_layer3_out, vgg_layer4_out, vgg_layer7_out = load_vgg(sess, vgg_path)
         nn_last_layer = layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes)
 
         logits, train_op, cross_entropy_loss = optimize(nn_last_layer, correct_label, learning_rate, num_classes)
@@ -176,7 +176,7 @@ def run():
         # TODO: Save inference data using helper.save_inference_samples
         #  helper.save_inference_samples(runs_dir, data_dir, sess, image_shape, logits, keep_prob, input_image)
         helper.save_inference_samples(runs_dir, data_dir, sess, image_shape, logits, keep_prob, input_image)
-        save_path = tf.train.Saver().save(sess, model_dir+ "Semanti_seg_trained.ckpt")
+        save_path = tf.train.Saver().save(sess, model_dir+ "Semantic_seg_trained.ckpt")
 
         # OPTIONAL: Apply the trained model to a video
 
