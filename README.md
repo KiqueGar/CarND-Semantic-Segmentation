@@ -1,4 +1,40 @@
 # Semantic Segmentation
+
+## Introduction
+The goal of this project is to implement a convolutional neural network to perform semantic segmentation on road images.
+The project is trained and tested over the KITTI dataset and implemented over the VGG-16 architecture
+
+## Architecture
+
+A pre-trained VGG-16 network was converted to a fully convolutional network, converting it's fully connected layer into
+1x1 convolution and upsampling to it's previous layers.
+Only 2 categories are present: road and not road
+
+- Loss function is cross entropy
+- Adam optimizer is used
+- Dropout is 0.5
+- Learning rate starts at 0.001
+- Batch size = 1
+- Epochs = 50
+
+An Amazon EC2 g2.8xlarge instance was used for training, however, by memory constraints, batch size is defined as 1
+
+Loss is decaying as expected, it might seem that it's tarting to rise after epoch 40
+
+![Loss plot](./Loss_plot.png)
+
+## Results
+
+With a low batch size, poor edge filtering is made, however, we see that road is mostly correctly classified as driveable.
+A future iteration will have a lower learning rate and higher dropout rate as to improve this edge cases
+
+![Sample1](./runs/1528510779.656766/uu_000056.png)
+![Sample2](./runs/1528510779.656766/umm_000085.png)
+![Sample3](./runs/1528510779.656766/um_000078.png)
+
+Original Udacity Readme ahead
+---
+
 ### Introduction
 In this project, you'll label the pixels of a road in images using a Fully Convolutional Network (FCN).
 
