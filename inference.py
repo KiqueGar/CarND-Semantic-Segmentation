@@ -123,8 +123,9 @@ def run():
     # OPTIONAL: Train and Inference on the cityscapes dataset instead of the Kitti dataset.
     # You'll need a GPU with at least 10 teraFLOPS to train on.
     #  https://www.cityscapes-dataset.com/
-    saver = tf.train.Saver()
+    saver = tf.train.import_meta_graph('Semantic_seg_trained.meta')
     with tf.Session() as sess:
+        '''        
         # Path to vgg model
         vgg_path = os.path.join(data_dir, 'vgg')
         # Create function to get batches
@@ -139,9 +140,9 @@ def run():
         nn_last_layer = layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes)
 
         logits, train_op, cross_entropy_loss = optimize(nn_last_layer, correct_label, learning_rate, num_classes)
-
+        '''
         # TODO: Train NN using the train_nn function
-        saver.restore(sess, "model_dir" + "Semantic_seg_trained.ckpt")
+        saver.restore(sess, tf.train.latest_checkpoint(model_dir))
         print("Model restored")
 
 #        train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_loss, input_image, correct_label, keep_prob, learning_rate)
