@@ -4,7 +4,9 @@ import helper
 import warnings
 from distutils.version import LooseVersion
 import project_tests as tests
-
+from moviepy.editor import VideoFileClip
+import scipy.misc
+import numpy as np
 
 # Check TensorFlow Version
 assert LooseVersion(tf.__version__) >= LooseVersion('1.0'), 'Please use TensorFlow version 1.0 or newer.  You are using {}'.format(tf.__version__)
@@ -134,7 +136,7 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
             return
 tests.test_train_nn(train_nn)
 
-def predict_video(video_library, sess, image_shape, logits, keep_prob, input_image):
+def predict_video(sess, image_shape, logits, keep_prob, input_image):
     video_dir = r"./test_video//"
     video_library =   [["GOPR0706_cut1.mp4", [210, 470]],
                         ["GOPR0706_cut2.mp4", [210, 470]],
@@ -144,7 +146,7 @@ def predict_video(video_library, sess, image_shape, logits, keep_prob, input_ima
                         ["GOPR0732_cut2.mp4", [316, 576]],
                         ["GOPR0732_cut3.mp4", [316, 576]]
                         ]
-    for video_data in video_list[0:1]:
+    for video_data in video_library[0:1]:
         rect = video_data[1]
         video_output = video_data[0][:-4] +"_out.mp4"
         clip1 = VideoFileClip(video_dir + video_data[0])
@@ -152,7 +154,7 @@ def predict_video(video_library, sess, image_shape, logits, keep_prob, input_ima
         video_clip.write_videofile(video_output, audio=False)
 
 
-def predict_frame(im, rect, sess, image_shape, logits, keep_prob, input_image):
+def predict_frame(im, rect, sess, image_shape, logits, keep_prob, image_pl):
     original = im
     roi = im[rect[0]:rect[1],0:720]
 
@@ -167,8 +169,8 @@ def predict_frame(im, rect, sess, image_shape, logits, keep_prob, input_image):
     mask = scipy.misc.toimage(mask, mode="RGBA")
     street_im = scipy.misc.toimage(image)
     street_im.paste(mask, box=None, mask=mask)
-
-    original[rect[0]:rect[1], 0:720] = street_im
+    upscale_pred = scipy.misc.imresize(street_im, (rect[1]-rect[0],720))
+    original[rect[0]:rect[1], 0:720] = upscale_pred
     return original
 
 
@@ -217,7 +219,7 @@ def run():
 
         # TODO: Save inference data using helper.save_inference_samples
         #  helper.save_inference_samples(runs_dir, data_dir, sess, image_shape, logits, keep_prob, input_image)
-        predict_video()
+        predict_video(sess, image_shape, logits, keep_prob, input_image)
         helper.save_inference_samples(runs_dir, data_dir, sess, image_shape, logits, keep_prob, input_image)
         save_path = tf.train.Saver().save(sess, model_dir+ "Semantic_seg_trained.ckpt")
 
