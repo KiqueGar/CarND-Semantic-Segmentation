@@ -20,13 +20,18 @@ Only 2 categories are present: road and not road
 An Amazon EC2 g2.8xlarge instance was used for training, however, by memory constraints, batch size is defined as 1
 
 Loss is decaying as expected, it might seem that it's tarting to rise after epoch 40
+A first training was made wich seems to converge around epoch 40, fromwhere it starts to rise.
+Another training was made using a g3.4xlarge instance, a lower learning rate (0.00003) and higher dropout rate (0.75)
+helped to counterbalance for a higher batch size (8 vs 2)
+
+Below we can see the comparisson between 2 training runs, we see a almost the same steady value, however, we see a smoother
+loss function with a lower learning rate (also, initial error is bigger)
 
 ![Loss plot](./Loss_plot.png)
 
 ## Results
+The roa is mostly correctly classified as driveable, also, the model performs as expeted on some of the videos propossed
 
-With a low batch size, poor edge filtering is made, however, we see that road is mostly correctly classified as driveable.
-A future iteration will have a lower learning rate and higher dropout rate as to improve this edge cases
 
 ![Sample1](./runs/1528510779.656766/uu_000056.png)
 ![Sample2](./runs/1528510779.656766/umm_000085.png)
