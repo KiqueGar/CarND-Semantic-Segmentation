@@ -129,7 +129,7 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
         print("EPOCH {}".format(i))
         for image, label in get_batches_fn(batch_size):
             _, loss = sess.run([train_op, cross_entropy_loss], feed_dict = {input_image: image, correct_label: label,
-                        keep_prob: 0.75, learning_rate: 0.0001})
+                        keep_prob: 0.75, learning_rate: 0.00003})
         print("Loss: {:.3f}\n".format(loss))
         if loss < .01:
             print("Low loss, stopping now...")
@@ -146,7 +146,7 @@ def predict_video(sess, image_shape, logits, keep_prob, input_image):
                         ["GOPR0732_cut2.mp4", [316, 576]],
                         ["GOPR0732_cut3.mp4", [316, 576]]
                         ]
-    for video_data in video_library[0:1]:
+    for video_data in video_library:
         rect = video_data[1]
         video_output = video_data[0][:-4] +"_out.mp4"
         clip1 = VideoFileClip(video_dir + video_data[0])
@@ -201,8 +201,8 @@ def run():
         #  https://datascience.stackexchange.com/questions/5224/how-to-prepare-augment-images-for-neural-network
 
         # TODO: Build NN using load_vgg, layers, and optimize function
-        epochs = 55
-        batch_size = 2
+        epochs = 75
+        batch_size = 8
 
         #TF place holders:
         correct_label = tf.placeholder(tf.int32, [None, None, None, num_classes], name= 'correct_label')
