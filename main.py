@@ -127,12 +127,50 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
         print("EPOCH {}".format(i))
         for image, label in get_batches_fn(batch_size):
             _, loss = sess.run([train_op, cross_entropy_loss], feed_dict = {input_image: image, correct_label: label,
-                        keep_prob: 0.75, learning_rate: 0.00005})
+                        keep_prob: 0.75, learning_rate: 0.0001})
         print("Loss: {:.3f}\n".format(loss))
-        if loss < .001:
+        if loss < .01:
             print("Low loss, stopping now...")
             return
 tests.test_train_nn(train_nn)
+
+def predict_video(video_library, sess, image_shape, logits, keep_prob, input_image):
+    video_dir = r"./test_video//"
+    video_library =   [["GOPR0706_cut1.mp4", [210, 470]],
+                        ["GOPR0706_cut2.mp4", [210, 470]],
+                        ["GOPR0707_cut1.mp4", [316, 576]],
+                        ["GOPR0708_cut1.mp4", [316, 576]],
+                        ["GOPR0732_cut1.mp4", [316, 576]],
+                        ["GOPR0732_cut2.mp4", [316, 576]],
+                        ["GOPR0732_cut3.mp4", [316, 576]]
+                        ]
+    for video_data in video_list[0:1]:
+        rect = video_data[1]
+        video_output = video_data[0][:-4] +"_out.mp4"
+        clip1 = VideoFileClip(video_dir + video_data[0])
+        video_clip = clip1.fl_image(lambda frame: predict_frame(frame, rect, sess, image_shape, logits, keep_prob, input_image))
+        video_clip.write_videofile(video_output, audio=False)
+
+
+def predict_frame(im, rect, sess, image_shape, logits, keep_prob, input_image):
+    original = im
+    roi = im[rect[0]:rect[1],0:720]
+
+    image = scipy.misc.imresize(roi, image_shape)
+
+    im_softmax = sess.run(
+            [tf.nn.softmax(logits)],
+            {keep_prob: 1.0, image_pl: [image]})
+    im_softmax = im_softmax[0][:, 1].reshape(image_shape[0], image_shape[1])
+    segmentation = (im_softmax > 0.5).reshape(image_shape[0], image_shape[1], 1)
+    mask = np.dot(segmentation, np.array([[0, 255, 0, 127]]))
+    mask = scipy.misc.toimage(mask, mode="RGBA")
+    street_im = scipy.misc.toimage(image)
+    street_im.paste(mask, box=None, mask=mask)
+
+    original[rect[0]:rect[1], 0:720] = street_im
+    return original
+
 
 
 def run():
@@ -151,6 +189,7 @@ def run():
     #  https://www.cityscapes-dataset.com/
 
     with tf.Session() as sess:
+
         # Path to vgg model
         vgg_path = os.path.join(data_dir, 'vgg')
         # Create function to get batches
@@ -178,10 +217,13 @@ def run():
 
         # TODO: Save inference data using helper.save_inference_samples
         #  helper.save_inference_samples(runs_dir, data_dir, sess, image_shape, logits, keep_prob, input_image)
+        predict_video()
         helper.save_inference_samples(runs_dir, data_dir, sess, image_shape, logits, keep_prob, input_image)
         save_path = tf.train.Saver().save(sess, model_dir+ "Semantic_seg_trained.ckpt")
 
         # OPTIONAL: Apply the trained model to a video
+
+
 
 
 if __name__ == '__main__':
