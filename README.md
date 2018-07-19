@@ -30,12 +30,24 @@ loss function with a lower learning rate (also, initial error is bigger)
 ![Loss plot](./Loss_plot.png)
 
 ## Results
-The roa is mostly correctly classified as driveable, also, the model performs as expeted on some of the videos propossed
-
+The road is mostly correctly classified as driveable, also, the model performs as expeted on some of the videos propossed
 
 ![Sample1](./runs/1528510779.656766/uu_000056.png)
 ![Sample2](./runs/1528510779.656766/umm_000085.png)
 ![Sample3](./runs/1528510779.656766/um_000078.png)
+
+## Videos on youtube
+
+- [Pedestrian and motorcycle](https://youtu.be/DcExBqH44dk)
+
+- [Taking an exit](https://youtu.be/_vONy5DKarc)
+
+- [Up and Down a bridge](https://www.youtube.com/edit?o=U&video_id=vdrFJNaq1So)
+
+- [Painted non-drivable zone](https://youtu.be/nEu10paLl_U)
+
+- [Merge to highway](https://www.youtube.com/edit?o=U&video_id=-vXc7HDQhAM)
+
 
 Original Udacity Readme ahead
 ---
